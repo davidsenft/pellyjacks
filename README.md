@@ -14,7 +14,7 @@ Says Dave:
 
 > Jelly packs!
 
-## How to play the game ##
+## How to play ##
 
 1.	Go to brunch with a friend, somewhere with a plentiful 
 	supply of those little packs of jelly.
@@ -23,8 +23,8 @@ Says Dave:
 	pack is called a *"pelly jack"* (or simply a *"jack"*). A 
 	tower of packs, on the other hand, is called a *"stack"*. 
 	Right now the grid contains only jacks.
-4.	The row of the grid closest to player one is player 
-	one's *"rack"*; the same goes for player two.
+4.	The row of the grid closest to each player is that player's 
+	*"rack"* (think of it like an end zone or a home base).
 5.	A move may consist of:
 	- <b>"Stacking a jack"</b> - Take any single jack and stack 
 	it on top of an adjacent jack or stack, leaving behind an 
@@ -44,6 +44,11 @@ Says Dave:
 8.	If you can't tell who is winning, or what's going on, don't
 	be discouraged. Brunch is early, and oftentimes disorienting.
 9.	Your meal has arrived! Crack open a pack and have a snack.
+
+## The pelly.py script ##
+
+IS UNDER CONSTRUCTION AND TOTALLY USELESS RIGHT NOW
+
 
 
 
