@@ -18,8 +18,7 @@ Says Dave:
 
 1.	Go to brunch with a friend, somewhere where they give you
 	those little packs of jelly.
-2.	Arrange the jelly packs in a <b>m</b>x<b>n</b> grid, 
-	because why not.
+2.	Arrange the jelly packs in a grid, because why not.
 3.	Any time there is only a single jelly pack in any space on 
 	the grid, we'll refer to that piece as a *"pelly jack"*, or 
 	simply a "jack" (because brunch is early, and oftentimes 
