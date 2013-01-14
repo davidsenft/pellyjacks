@@ -21,8 +21,9 @@ Says Dave:
 2.	Arrange the jelly packs in a grid, because why not.
 3.	Any time there is only a single jelly pack in any space on 
 	the grid, we'll refer to that piece as a *"pelly jack"*, or 
-	simply a "jack" (because brunch is early, and oftentimes 
-	disorienting). Right now the grid contains only jacks.
+	simply a *"jack"* (because brunch is early, and oftentimes 
+	disorienting). A tower of packs is called a *"stack"*. Right 
+	now the grid contains only jacks.
 3.	The row of the grid closest to player one is player 
 	one's *"rack"*; the same goes for player two.
 4.	A move may consist of:
