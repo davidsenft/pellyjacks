@@ -2,7 +2,9 @@
 
 A spreadable game by David Senft and Daniel Wollin
 
-### Backstory ###
+* * *
+
+## Backstory ##
 
 Says Dan:
 
@@ -12,8 +14,11 @@ Says Dave:
 
 > Jelly packs!
 
-### Rules of the game ###
+## Rules of the game ##
 
-*	Start with an *m*x*n* board, with 1 jelly pack in each position.
-	Because brunch is early, and at times disorienting, we'll refer to
+1.	Arrange jelly packs in a <b>m</b>x<b>n</b> grid, because why not.
+	And because brunch is early, and at times disorienting, we'll refer to
 	these pieces as *pellyjacks* or just *jacks*.
+2.	A move may consist of:
+	- check
+	- one
