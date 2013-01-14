@@ -29,19 +29,21 @@ Says Dave:
 	- <b>"Stacking a jack"</b> - Take any single jack and stack 
 	it on top of an adjacent jack or stack, leaving behind an 
 	empty space in the grid.
-	- <b>"Passing a stack"</b> - Slide any stack onto an 
+	- <b>"Sliding a stack"</b> - Slide any stack onto an 
 	adjacent empty space in the grid.
-	- <b>"Racking a stack"</b> - Remove a stack from your own 
-	rack, and earn one point from each pack in that stack.
+	- <b>"Racking a stack"</b> - Remove a stack of packs in 
+	your own rack from the grid completely, and put these packs 
+	off to the side (but keep your racked packs separate from 
+	your opponent's, since they will determine the winner).
 6.	YOU MAY NOT:
 	- Stack a stack
+	- Slide a jack
 	- Rack a jack
-	- Pass a jack
 7.	Players alternate until no moves remain, at which point the 
 	player who has racked the most packs wins the game.
 8.	If you can't tell who is winning, or what's going on, don't
 	be discouraged. Brunch is early, and oftentimes disorienting.
-9.	Your meal has arrived! Have a snack.
+9.	Your meal has arrived! Crack open a pack and have a snack.
 
 
 

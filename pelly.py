@@ -1,6 +1,9 @@
 def error(str):
 	print "//\n//\tERROR\n//\t" + str + "\n//"
 
+def process(command):
+	print "You said: " + command
+
 class PellyBoard:
 
 	"Game board"
@@ -32,9 +35,6 @@ class PellyBoard:
 		buf += "</table>"
 		print buf
 
-	"def isOn(self, r, c):"
-		"return self.b[tr][tc]"
-
 	def move(self, fr, fc, tr, tc):
 		t = self.b[tr][tc]
 
@@ -56,14 +56,14 @@ class PellyBoard:
 		t = self.b[tr][tc]
 
 		if f == 0:
-			error("no pack to slide")
+			error("no stack to slide")
 			return False
 			
 		elif f == 1:
 			error("can't slide a jack")
 			return False
 
-		return domove(self, fr, fc, tr, tc)
+		return self.domove(fr, fc, tr, tc)
 
 
 	def stack(self, fr, fc, tr, tc):
@@ -75,10 +75,10 @@ class PellyBoard:
 			return False
 
 		elif f > 1:
-			error("can't stack a pack")
+			error("can't stack a stack")
 			return False
 
-		return domove(self, fr, fc, tr, tc)
+		return self.domove(fr, fc, tr, tc)
 
 
 	def domove(self, fr, fc, tr, tc):
@@ -90,3 +90,9 @@ class PellyBoard:
 
 board = PellyBoard()
 board.stack(0,0,1,1)
+
+command = raw_input("Player " + `board.t` + "'s turn... \n")
+while (command != "stop"):
+	process(command)
+	command = raw_input("Player " + `board.t` + "'s turn... \n")
+
