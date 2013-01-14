@@ -27,8 +27,8 @@ Says Dave:
 	one's *"rack"*; the same goes for player two.
 5.	A move may consist of:
 	- <b>"Stacking a jack"</b> - Take any single jack and stack 
-	it on top of an adjacent jack (or onto an existing stack),
-	leaving behind an empty space in the grid.
+	it on top of an adjacent jack or stack, leaving behind an 
+	empty space in the grid.
 	- <b>"Passing a stack"</b> - Slide any stack onto an 
 	adjacent empty space in the grid.
 	- <b>"Racking a stack"</b> - Remove a stack from your own 
