@@ -16,12 +16,11 @@ Says Dave:
 
 ## How to play the game ##
 
-1.	Go to brunch with a friend, somewhere where they give you
-	those little packs of jelly.
+1.	Go to brunch with a friend, somewhere with a plentiful 
+	supply of those little packs of jelly.
 2.	Arrange the jelly packs in a grid, because why not.
 3.	When a space on the grid contains only one jelly pack, that
-	pack is called a *"pelly jack"* (or simply a *"jack"*), 
-	because brunch is early, and oftentimes disorienting. A 
+	pack is called a *"pelly jack"* (or simply a *"jack"*). A 
 	tower of packs, on the other hand, is called a *"stack"*. 
 	Right now the grid contains only jacks.
 4.	The row of the grid closest to player one is player 
@@ -40,4 +39,11 @@ Says Dave:
 	- Pass a jack
 7.	Players alternate until no moves remain, at which point the 
 	player who has racked the most packs wins the game.
-8.	By now your meal has arrived. Have a snack.
+8.	If you can't tell who is winning, or what's going on, don't
+	be discouraged. Brunch is early, and oftentimes disorienting.
+9.	Your meal has arrived! Have a snack.
+
+
+
+
+
