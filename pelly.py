@@ -42,9 +42,14 @@ def debug(var, name):
 class PellyBoard:
 
 	# Optionally initialize with a list containing the initial board position
-	def __init__(self, b=[[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1]]):
+	# A PellyBoard is always in current player's orientation (rack on top)
+	def __init__(self, b=[[1,2,2,1],[1,1,4,1],[1,1,1,1],[1,1,1,1]]):
 		msg("initializing PellyBoard")
 		self.b = b
+
+		# orientation flags (true if switched)
+		self.v = False
+		self.h = False
 
 		# immutable properties of b
 		self.rows = len(self.b)
@@ -58,39 +63,83 @@ class PellyBoard:
 	def __ne__(self, other):
 		return not self.__eq__(other)
 
-	def echo(self):
+	def echo(self, game=True):
+		if game:
+			self.orient() # switch to game orientation
 		for row in self.b:
 			print "// \t" + "\t".join([`col` for col in row])
 		print "// "
+		if game:
+			self.orient() # return to internal orientation
 
-	def html(self):
+	def orient(self):
+		if self.v:
+			self.reverse(False)
+		if self.h:
+			self.flip(False)
+
+	def reverse(self,flag=True):
+		self.b.reverse()
+		if flag:
+			self.v = not self.v
+
+	def flip(self,flag=True):
+		for r in range(self.rows):
+			self.b[r].reverse()
+		if flag:
+			self.h = not self.h
+
+	def canonical(self):
+		# convert to equivalent canonical form
+		# first weighted row is made positive
+		# (i.e. weighted to the right)
+		for row in self.b:
+			weight = 0
+			for c in range(self.cols):
+				half = math.floor(self.cols/2)
+				if c < half:
+					weight -= row[c]**2
+				if c >= self.cols - half:
+					weight += row[c]**2
+			if not weight == 0:
+				if weight < 0:
+					self.flip()
+				break
+
+	''' def html(self):
 		html = "<table>"
 		for row in self.b:
 			html += "<tr><td>"
 			html +=  "</td><td>".join([`col` for col in row])
 			html += "</td></tr>"
 		html += "</table>"
-		print html
+		print html '''
 
-	def get(self, r, c):
+	def get(self, r, c, orient=False):
+		if orient:
+			# use game orientation
+			self.orient()
+			retval = self.b[r][c]
+			self.orient()
+			return retval
 		return self.b[r][c]
 
 	def on(self, r, c):
-		if r < 0 or r >= len(self.b):
+		if r < 0 or r >= self.rows:
 			return False
-		if c < 0 or c >= len(self.b[0]):
+		if c < 0 or c >= self.cols:
 			return False
 		return True
 
-	def move(self, fr, fc, tr, tc, do):
+	def move(self, fr, fc, tr, tc, do, orient=True):
 		if not self.on(fr,fc) or not self.on(tr,tc):
 			return error("out of bounds",do)
 
 		if not ((tr - fr)**2 + (tc - fc)**2) == 1:
 			return error("spaces are not adjacent",do)
 
-		f = self.get(fr,fc)
-		t = self.get(tr,tc)
+		f = self.get(fr,fc,orient)
+		t = self.get(tr,tc,orient)
 
 		if f <= 0:
 			return error("no piece to move",do)
@@ -109,9 +158,17 @@ class PellyBoard:
 			return error("inconceivable!")
 
 		if do:
+			if orient:
+				msg("orienting to make move")
+				self.orient()
 			msg(action + spot(fr,fc) + " -> " + spot(tr,tc))
 			self.b[tr][tc] += self.b[fr][fc]
 			self.b[fr][fc] = 0
+			if orient:
+				msg("returning orientation")
+				self.orient() # return to internal orientation
+			self.reverse()
+			self.canonical()
 
 		return True
 
@@ -156,7 +213,10 @@ class PellyGame:
 		print "// \tplayer 1 rack: " + `self.rack1`
 		print "// \tplayer 2 rack: " + `self.rack2`
 		print "// \tplayer " + `self.player` + "'s move \n// "
-		self.board.echo()
+		print "// \tgame orientation:"
+		self.board.echo(True)
+		print "// \tcanonical orientation:"
+		self.board.echo(False)
 
 	def save(self):
 		msg("saving game position")
@@ -185,14 +245,14 @@ class PellyGame:
 ###########################################
 
 game = PellyGame()
-game.move(0,0,0,0)
+game.move(1,0,0,0)
 game.move(0,1,0,2)
 game.move(0,0,1,0)
 game.move(3,3,2,3)
-game.move(0,2,0,1)
-game.save()
+game.echo()
+# game.save()
 
-# print "YAML DUMP: " + yaml.dump(board)
+###########################################
 
 msg("player " + `game.player` + "'s turn")
 command = raw_input()
