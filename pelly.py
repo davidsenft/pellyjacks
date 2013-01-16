@@ -7,11 +7,11 @@ import yaml
 ###########################################
 
 # SQL Connection
-connection = sqlite3.connect('example.db')
+connection = sqlite3.connect('pelly.db')
 c = connection.cursor()
 
 # Create table
-# c.execute("CREATE TABLE boards (board text, score real)")
+# c.execute("CREATE TABLE board_values (board text, value real)")
 
 
 ###########################################
@@ -118,10 +118,16 @@ class PellyGame:
 
 	def save(self):
 		msg("saving game position")
-		boardstring = yaml.dump(self.board.b)
-		c.execute("INSERT INTO boards VALUES ('" + boardstring + "', " + `self.moves` + ")")
-		# Save (commit) the changes
+		board = yaml.dump(self.board.b)
+
+		# TODO: only insert board if it doesn't exist yet
+		c.execute("INSERT INTO board_values VALUES ('" + board + "', " + `self.value()` + ")")
 		connection.commit()
+
+	def value(self):
+		# return a value for the board based on the current player's prospect of winning
+		# good is positive, bad is negative
+		return 0
 
 	def movesleft(self):
 
@@ -201,6 +207,7 @@ game.move(0,0,0,0)
 game.move(0,1,0,2)
 game.move(0,0,1,0)
 game.move(3,3,2,3)
+game.save()
 
 # print "YAML DUMP: " + yaml.dump(board)
 
