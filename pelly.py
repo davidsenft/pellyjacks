@@ -6,18 +6,19 @@ import yaml
 
 ###########################################
 
-# SQL Connection
+# SQL Database Connection
 connection = sqlite3.connect('pelly.db')
 c = connection.cursor()
 
 # Create table
 # c.execute("CREATE TABLE board_values (board text, value real)")
 
-
 ###########################################
 
-def error(str):
-	print "//\n//\tERROR\n//\t" + str + "\n//"
+def error(str, do):
+	if do:
+		print "//\n//\tERROR\n//\t" + str + "\n//"
+	return False
 
 def msg(str):
 	print "> " + str + "..."
@@ -40,10 +41,12 @@ def debug(var, name):
 
 class PellyBoard:
 
-	# b (optional): List with initial board position
+	# Optionally initialize with a list containing the initial board position
 	def __init__(self, b=[[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,1,1,1]]):
 		msg("initializing PellyBoard")
 		self.b = b
+
+		# immutable properties of b
 		self.rows = len(self.b)
 		self.cols = len(self.b[0])
 
@@ -79,17 +82,56 @@ class PellyBoard:
 			return False
 		return True
 
-	def move(self, fr, fc, tr, tc):
-		self.b[tr][tc] += self.b[fr][fc]
-		self.b[fr][fc] = 0
+	def move(self, fr, fc, tr, tc, do):
+		if not self.on(fr,fc) or not self.on(tr,tc):
+			return error("out of bounds",do)
 
+		if not ((tr - fr)**2 + (tc - fc)**2) == 1:
+			return error("spaces are not adjacent",do)
 
+		f = self.get(fr,fc)
+		t = self.get(tr,tc)
+
+		if f <= 0:
+			return error("no piece to move",do)
+
+		if t > 0:
+			if f > 1:
+				return error("can't stack a stack",do)
+			action = "stacking jack "
+
+		elif t == 0:
+			if f == 1:
+				return error("can't slide a jack",do)
+			action = "sliding stack "
+
+		else: # this should never happen!
+			return error("inconceivable!")
+
+		if do:
+			msg(action + spot(fr,fc) + " -> " + spot(tr,tc))
+			self.b[tr][tc] += self.b[fr][fc]
+			self.b[fr][fc] = 0
+
+		return True
+
+	def available(self):
+		num = 0
+		#for every spot on the grid...
+		for r in range(self.rows):
+			for c in range(self.cols):
+
+				# try all four directions
+				for change in [[0,-1],[-1,0],[0,1],[1,0]]:
+					if self.move(r,c,r+change[0],c+change[1],False):
+						num = num + 1
+		return num
 
 ###########################################
 
 class PellyGame:
 
-	# board (optional): PellyBoard with initial position
+	# Optionally initialize with a PellyBoard object
 	def __init__(self, board=PellyBoard(), player=1, rack1=0, rack2=0, moves=0):
 		msg("initializing PellyGame")
 		self.board = board
@@ -110,7 +152,7 @@ class PellyGame:
 		print "//"
 		print "// \tPELLYJACKS " + `self.board.rows` + "x" + `self.board.cols`
 		print "// \tmoves made: " + `self.moves`
-		print "// \tmoves available: " + `self.movesleft()`
+		print "// \tmoves available: " + `self.board.available()`
 		print "// \tplayer 1 rack: " + `self.rack1`
 		print "// \tplayer 2 rack: " + `self.rack2`
 		print "// \tplayer " + `self.player` + "'s move \n// "
@@ -129,72 +171,12 @@ class PellyGame:
 		# good is positive, bad is negative
 		return 0
 
-	def movesleft(self):
-
-		num = 0
-		#for every spot on the grid...
-		for r in range(self.board.rows):
-			for c in range(self.board.cols):
-
-				# try all four directions
-				for change in [[0,-1],[-1,0],[0,1],[1,0]]:
-					if self.move(r,c,r+change[0],c+change[1],False):
-						num = num + 1
-
-		return num
-
 	def move(self, fr, fc, tr, tc, do=True):
-
-		if do:
-			msg("checking move " + spot(fr,fc) + " to " + spot(tr,tc))
-
-		if not self.board.on(fr,fc) or not self.board.on(tr,tc):
+		if self.board.move(fr, fc, tr, tc, do):
 			if do:
-				error("out of bounds")
-			return False
-
-		if not ((tr - fr)**2 + (tc - fc)**2) == 1:
-			if do:
-				error("spaces are not adjacent")
-			return False
-
-		f = self.board.get(fr,fc)
-		t = self.board.get(tr,tc)
-
-		if f <= 0:
-			if do:
-				error("no piece to move")
-			return False
-
-		if t > 0:
-			if f > 1:
-				if do:
-					error("can't stack a stack")
-				return False
-			action = "stacking"
-
-		elif t == 0:
-			if f == 1:
-				if do:
-					error("can't slide a jack")
-				return False
-			action = "sliding"
-
-		else:
-			error("inconceivable!")
-			return False
-		
-		if do:
-			msg("move is valid")
-
-		if do:
-			msg(action + " piece at " + spot(fr,fc) + " to " + spot(tr,tc))
-			self.board.move(fr, fc, tr, tc)
-			self.player = -self.player
-			self.moves = self.moves + 1
-			self.echo()
-
-		return True
+				self.player = -self.player
+				self.moves = self.moves + 1
+				self.echo()
 
 	def rack(self, col, do=True):
 		# do some stuff
@@ -207,6 +189,7 @@ game.move(0,0,0,0)
 game.move(0,1,0,2)
 game.move(0,0,1,0)
 game.move(3,3,2,3)
+game.move(0,2,0,1)
 game.save()
 
 # print "YAML DUMP: " + yaml.dump(board)
