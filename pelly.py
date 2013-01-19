@@ -26,9 +26,6 @@ def msg(str):
 def process(command):
 	print "You said: " + command
 
-def spot(r,c):
-	return "(" + `r` + ", " + `c` + ")"
-
 def debug(var, name):
 	if hasattr(var,"__dict__"):
 		print name + ": " + vars(var)
@@ -41,8 +38,8 @@ def debug(var, name):
 
 class PellyBoard:
 
-	# Optionally initialize with a list containing the initial board position
-	# A PellyBoard is always in current player's orientation (rack on top)
+	# Optionally initialized with a list containing the initial board position
+	# board is always in canonical orientation w/ current player's rack on top
 	def __init__(self, b=[[1,2,2,1],[1,1,4,1],[1,1,1,1],[1,1,1,1]]):
 		msg("initializing PellyBoard")
 		self.b = b
@@ -63,36 +60,54 @@ class PellyBoard:
 	def __ne__(self, other):
 		return not self.__eq__(other)
 
+	# prints board, game-oriented by default
 	def echo(self, game=True):
 		if game:
-			self.orient() # switch to game orientation
+			# switch to game orientation
+			self.orient()
+		if not game or not self.v:
+			print "//\t-------------------------"
 		for row in self.b:
 			print "// \t" + "\t".join([`col` for col in row])
-		print "// "
 		if game:
-			self.orient() # return to internal orientation
+			if self.v:
+				print "//\t-------------------------"
+			# return to canonical orientation
+			self.orient()
+		print "// "
 
+	# returns game-readable piece coordinate
+	def spot(self,r,c):
+		if self.v:
+			r = self.rows - r - 1
+		if self.h:
+			c = self.cols - c - 1
+		return "(" + `r` + ", " + `c` + ")"
+
+	# toggle game/canonical orientation
 	def orient(self):
 		if self.v:
 			self.reverse(False)
 		if self.h:
 			self.flip(False)
 
+	# reverse rows (i.e. switch players)
 	def reverse(self,flag=True):
 		self.b.reverse()
 		if flag:
 			self.v = not self.v
 
+	# reverse columns (does not affect board value)
 	def flip(self,flag=True):
 		for r in range(self.rows):
 			self.b[r].reverse()
 		if flag:
 			self.h = not self.h
 
+	# converts board to equivalent canonical form
+	# such that first weighted row is positive
+	# (i.e. weighted to the right)
 	def canonical(self):
-		# convert to equivalent canonical form
-		# first weighted row is made positive
-		# (i.e. weighted to the right)
 		for row in self.b:
 			weight = 0
 			for c in range(self.cols):
@@ -106,15 +121,8 @@ class PellyBoard:
 					self.flip()
 				break
 
-	''' def html(self):
-		html = "<table>"
-		for row in self.b:
-			html += "<tr><td>"
-			html +=  "</td><td>".join([`col` for col in row])
-			html += "</td></tr>"
-		html += "</table>"
-		print html '''
-
+	# gets the piece count at a coordinate
+	# defaults to canonical orientation
 	def get(self, r, c, orient=False):
 		if orient:
 			# use game orientation
@@ -124,6 +132,7 @@ class PellyBoard:
 			return retval
 		return self.b[r][c]
 
+	# checks if a coordinate is on the board
 	def on(self, r, c):
 		if r < 0 or r >= self.rows:
 			return False
@@ -131,15 +140,27 @@ class PellyBoard:
 			return False
 		return True
 
-	def move(self, fr, fc, tr, tc, do, orient=True):
+	# translates game-oriented move to canonical move
+	def moveoriented(self, fr, fc, tr, tc, do):
+		if self.v:
+			fr = self.rows - fr - 1
+			tr = self.rows - tr - 1
+		if self.h:
+			fc = self.cols - fc - 1
+			tc = self.cols - tc - 1
+		return self.move(fr, fc, tr, tc, do)
+
+	# validates a move in canonical orientation
+	# then makes the move if "do" is true
+	def move(self, fr, fc, tr, tc, do):
 		if not self.on(fr,fc) or not self.on(tr,tc):
 			return error("out of bounds",do)
 
 		if not ((tr - fr)**2 + (tc - fc)**2) == 1:
 			return error("spaces are not adjacent",do)
 
-		f = self.get(fr,fc,orient)
-		t = self.get(tr,tc,orient)
+		f = self.get(fr,fc)
+		t = self.get(tr,tc)
 
 		if f <= 0:
 			return error("no piece to move",do)
@@ -158,20 +179,15 @@ class PellyBoard:
 			return error("inconceivable!")
 
 		if do:
-			if orient:
-				msg("orienting to make move")
-				self.orient()
-			msg(action + spot(fr,fc) + " -> " + spot(tr,tc))
+			msg(action + self.spot(fr,fc) + " -> " + self.spot(tr,tc))
 			self.b[tr][tc] += self.b[fr][fc]
 			self.b[fr][fc] = 0
-			if orient:
-				msg("returning orientation")
-				self.orient() # return to internal orientation
 			self.reverse()
 			self.canonical()
 
 		return True
 
+	# returns the number of currently available moves
 	def available(self):
 		num = 0
 		#for every spot on the grid...
@@ -180,7 +196,7 @@ class PellyBoard:
 
 				# try all four directions
 				for change in [[0,-1],[-1,0],[0,1],[1,0]]:
-					if self.move(r,c,r+change[0],c+change[1],False):
+					if self.move(r,c,r+change[0],c+change[1],do=False):
 						num = num + 1
 		return num
 
@@ -205,6 +221,7 @@ class PellyGame:
 	def __ne__(self, other):
 		return not self.__eq__(other)
 
+	# prints game-oriented board and all relevant game info
 	def echo(self):
 		print "//"
 		print "// \tPELLYJACKS " + `self.board.rows` + "x" + `self.board.cols`
@@ -218,6 +235,7 @@ class PellyGame:
 		print "// \tcanonical orientation:"
 		self.board.echo(False)
 
+	# stores the current board and the board's value in the board_values table
 	def save(self):
 		msg("saving game position")
 		board = yaml.dump(self.board.b)
@@ -226,21 +244,32 @@ class PellyGame:
 		c.execute("INSERT INTO board_values VALUES ('" + board + "', " + `self.value()` + ")")
 		connection.commit()
 
+	# returns a value for the board based on the current player's prospect of winning
+	# (good is positive, bad is negative)
 	def value(self):
-		# return a value for the board based on the current player's prospect of winning
-		# good is positive, bad is negative
 		return 0
 
-	def move(self, fr, fc, tr, tc, do=True):
-		if self.board.move(fr, fc, tr, tc, do):
-			if do:
-				self.player = -self.player
-				self.moves = self.moves + 1
-				self.echo()
+	# executes the given game-oriented move and updates all game info accordingly
+	# returns True and prints the updated game on success, returns False otherwise
+	def move(self, fr, fc, tr, tc):
+		if self.board.moveoriented(fr, fc, tr, tc, True):
+			self.player = -self.player
+			self.moves = self.moves + 1
+			self.echo()
+			return True
+		return False
 
+	# racks the given column for the current player and updates all game info accordingly
 	def rack(self, col, do=True):
 		# do some stuff
 		print ""
+
+	# returns true if the game is over (no moves are left or it is
+	# impossible for the losing player to make up the deficit)
+	def over():
+		# do some stuff
+		print ""
+		return False
 
 ###########################################
 
